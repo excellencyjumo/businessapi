@@ -12,8 +12,11 @@ app.use((req,res)=>{
 const PORT=process.env.PORT||8000;
   
 
-db().then(
-    app.listen(PORT,()=>{
-        console.log(`server running on PORT ${PORT}`)
-        console.log("Mongodb server running succesfully.")
-}));
+db().
+    then(
+        app.listen(PORT,()=>{
+            console.log(`server running on PORT ${PORT}`)
+            console.log("Mongodb server running succesfully.")
+})).catch((err=>{
+        console.log("MONGODB Server Down")
+}))
