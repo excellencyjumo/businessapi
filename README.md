@@ -48,3 +48,13 @@ Start the application
 * Node.js
 * Express
 * MongoDB
+
+
+## Tech Stack
+
+**Database:** Mongodb
+
+**Server:** Node, Express
+
+**APITESTER:** PostMan
+ 
