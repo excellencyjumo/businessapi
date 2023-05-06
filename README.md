@@ -14,7 +14,7 @@
 - Save the qrcode image to a folder named qrcodes
 - Save the record to your database
 - Send a message back to the user as a json response containing
- // response = { "link": "http://bus.me/[id]" } where the unique-id is [id] on the link
+- // response = { "link": "http://bus.me/[id]" } where the unique-id is [id] on the link
 
 
 ## Installation
