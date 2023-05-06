@@ -58,3 +58,12 @@ Start the application
 
 **APITESTER:** PostMan
  
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`MONGODB URI`
+
+`API-KEY`
+
+`PORT`
