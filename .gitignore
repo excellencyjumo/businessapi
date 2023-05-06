@@ -1,0 +1,5 @@
+node_modules
+.env
+business.test.js
+qrcode
+config
