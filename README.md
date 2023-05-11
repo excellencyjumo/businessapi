@@ -5,7 +5,7 @@
 - This is a RESTful API for managing businesses. 
 - It allows you to create, read, update and delete businesses.
 
-# Features
+# Features(I)
 
 - Accepts a Business Profile JSON data
 - Validate the input data, accepting emails that ends with .com only
@@ -15,6 +15,9 @@
 - Save the record to your database
 - Send a message back to the user as a json response containing
 - // response = { "link": "http://bus.me/[id]" } where the unique-id is [id] on the link
+
+# Features(II)
+
 
 
 ## Installation
