@@ -4,9 +4,9 @@ const orderSchema = new Schema({
     status: 
       {
         type: String,
-        enum:[pending,processing,completed,cancelled],
+        enum:['pending', 'processing', 'completed', 'cancelled'],
       },
-    product : 
+    product: 
         [{
           type: Schema.Types.ObjectId,
           ref: "Product",

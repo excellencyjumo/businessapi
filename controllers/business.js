@@ -75,25 +75,27 @@ const loginBusiness = async (req, res) => {
 
 // update your businessProfile
 // get your businessProfile
+const viewBusinessProfile = async (req, res) => {
+  try {
+    // Find the business profile associated with the logged in user
+    const businessProfile = await BusinessProfile.findOne({ email: req.user.email });
+
+    if (!businessProfile) {
+      return sendResponse(res,404,"Business profile not found") 
+    }
+    // Populate the "product" array of the business profile with the associated products
+    await businessProfile.populate('product');
+    // Return the populated business profile object as the response
+    return sendResponse(res,200,"Business Data Available",businessProfile)
+  } catch (error) {
+    return sendResponse(res,500,"Server error",error.toString())
+  }
+};
 // delete your businessProfile
 
 // create a businessProduct
 const createProduct = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-    const decoded = jwt.verify(token, process.env.JWTSECRET);
-    const userRole = decoded.business.role;
-    if (userRole !== 'business') {
-      return sendResponse(res, 403, 'Not authorized to access this resource');
-    }
-
+  
     const { productname } = req.body;
     if (!productname) {
       return sendResponse(res, 400, 'Product name is required');
@@ -101,31 +103,19 @@ const createProduct = async (req, res) => {
 
     const newProduct = new productModel({ productName: productname });
     await newProduct.save();
+    const business = await businessModel.findOne({email: req.user.email});
+    // Add the reference to the new product's ID to the productIds array
+    business.productId.push(newProduct._id);
+    // Save the updated business object
+    await business.save();
     return sendResponse(res, 201, 'Product created successfully', newProduct);
-  } catch (error) {
-    console.error(error);
-    return sendResponse(res, 500, 'Server error');
   }
-};
 
 // update a product on businessProfile
 const updateProduct = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    const decoded = jwt.verify(token, process.env.JWTSECRET);
-    const userEmail = decoded.business.email;
     const productToUpdateId = req.params.id;
 
-    const business = await businessModel.findOne({ email: userEmail });
+    const business = await businessModel.findOne({ email: req.user.email });
     if (!business) {
       return sendResponse(res, 404, 'Business not found');
     }
@@ -140,34 +130,11 @@ const updateProduct = async (req, res) => {
       { productName: req.body.productname },
       { new: true });
     return sendResponse(res, 200, 'Product updated successfully', updatedProduct);
-  } catch (error) {
-    console.error(error);
-    return sendResponse(res, 500, 'Server error');
-  }
 };
 
 // delete a product on businessProfile
 const deleteProduct = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    const decoded = jwt.verify(token, process.env.JWTSECRET);
-    const businessEmail = decoded.business.email;
-
-    const product = await productModel.findById(req.params.id);
-    if (!product) {
-      return sendResponse(res, 404, 'Product not found');
-    }
-
-    const business = await businessModel.findOne({ email: businessEmail });
+    const business = await businessModel.findOne({email: req.user.email});
     if (!business) {
       return sendResponse(res, 404, 'Business not found');
     }
@@ -178,37 +145,14 @@ const deleteProduct = async (req, res) => {
 
     await productModel.findByIdAndDelete(req.params.id);
     return sendResponse(res, 200, 'Product deleted successfully');
-  } catch (error) {
-    console.log(error.toString());
-    return sendResponse(res, 500, 'Server error');
   }
-};
 
 // check orders made on businessProducts
 const productOrders = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      return sendResponse(res, 401, 'No Authorization Token provided');
-    }
-
-    jwt.verify(token, process.env.JWTSECRET, async (err, decoded) => {
-      if (err) {
-        return sendResponse(res, 401, 'Invalid Authorization Token');
-      }
-
-      const businessEmail = decoded.business.email;
-
-      const business = await businessModel.findOne({ email: businessEmail });
+   const business = await businessModel.findOne({ email: req.user.email });
       if (!business) {
         return sendResponse(res, 404, 'Business not found');
       }
-
       const productIds = business.productId;
 
       const pendingOrders = await orderModel.find({
@@ -239,17 +183,15 @@ const productOrders = async (req, res) => {
       };
 
       return sendResponse(res, 200, 'Orders fetched successfully', orders);
-    });
-  } catch (error) {
-    console.log(error);
-    return sendResponse(res, 500, 'Server error');
-  }
-};
+    };
 
 // process or cancel orders on businessProducts
+
+
 module.exports = {
   createBusiness,
   loginBusiness,
+  viewBusinessProfile,
   createProduct,
   updateProduct,
   deleteProduct,
