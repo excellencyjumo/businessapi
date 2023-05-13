@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const sendResponse = require("../utils");
 const businessModel = require("../models/business");
 const productModel = require("../models/product")
+const orderModel = require("../models/order")
 require("dotenv").config({ path: "../.env" })
 
 //create a business
@@ -63,7 +64,7 @@ const loginBusiness = async (req, res) => {
       email: business.email,
       role: business.role,
     };
-    const token = jwt.sign(payload, process.env.JWTSECRET, { expiresIn: process.env.EXPIRY });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.EXPIRY });
 
     // Return a success response with the JWT as a token property in the response body
     sendResponse(res, 200, 'Login successful', token);

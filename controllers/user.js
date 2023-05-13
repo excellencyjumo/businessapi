@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
     };
     jwt.sign(
       payload,
-      process.env.JWTSECRET,
+      process.env.JWT_SECRET,
       { expiresIn: process.env.EXPIRY },
       (err, token) => {
         if (err) throw err;
@@ -48,6 +48,7 @@ const registerUser = async (req, res) => {
 
 // Login user
 const loginUser = async (req, res) => {
+  
   const { username, password } = req.body;
 
   try {
@@ -72,7 +73,7 @@ const loginUser = async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWTSECRET,
+      process.env.JWT_SECRET,
       { expiresIn: process.env.EXPIRY },
       (err, token) => {
         if (err) throw err;
@@ -88,7 +89,7 @@ const loginUser = async (req, res) => {
 // fetchAProduct
 const getAproduct = async (req, res) => {
   try {
-    const data = productModel.find({ productName: req.body.productname }).exec();
+    const data = await productModel.find({ productName: req.body.productname });
     if (data.length == 0) {
       console.log(data);
       return sendResponse(res, 400, 'No Product Available right now');

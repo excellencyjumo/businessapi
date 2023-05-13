@@ -1,5 +1,5 @@
 const express=require("express");
-const env=require("dotenv").config()
+require("dotenv").config()
 const router=require("./routes");
 const sendResponse=require("./utils")
 const db=require("./database/db");
